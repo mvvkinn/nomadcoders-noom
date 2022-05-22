@@ -18,7 +18,14 @@ const httpServer = http.createServer(app);
 const io = socketIO(httpServer);
 
 io.on("connection", socket => {
-  console.log(socket);
+  socket.on("enter_room", (roomName, done) => {
+    console.log(roomName);
+    socket.join(roomName);
+    setTimeout(() => {
+      //not running in backend, executed by back, run in front-end (security risk)
+      done();
+    }, 10000);
+  });
 });
 
 /*
