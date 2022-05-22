@@ -18,13 +18,20 @@ const httpServer = http.createServer(app);
 const io = socketIO(httpServer);
 
 io.on("connection", socket => {
+  socket.onAny(event => {
+    console.log(`Socket event: ${event}`);
+  });
   socket.on("enter_room", (roomName, done) => {
-    console.log(roomName);
     socket.join(roomName);
-    setTimeout(() => {
-      //not running in backend, executed by back, run in front-end (security risk)
-      done();
-    }, 10000);
+    done();
+    socket.to(roomName).emit("welcome");
+  });
+  socket.on("disconnecting", () => {
+    socket.rooms.forEach(room => socket.to(room).emit("bye"));
+  });
+  socket.on("new_message", (msg, room, done) => {
+    socket.to(room).emit("new_message", msg);
+    done();
   });
 });
 
