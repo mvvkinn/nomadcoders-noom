@@ -1,7 +1,7 @@
 //this runs in backend
 import express from "express";
 import http from "http";
-import WebSocket from "ws";
+import socketIO from "socket.io";
 
 const app = express();
 
@@ -14,12 +14,18 @@ app.get("/*", (req, res) => res.redirect("/"));
 const handleListen = () => console.log("listening on http://localhost:3000");
 //app.listen(3000, handleListen);
 
-const server = http.createServer(app);
+const httpServer = http.createServer(app);
+const io = socketIO(httpServer);
+
+io.on("connection", socket => {
+  console.log(socket);
+});
+
+/*
 const wss = new WebSocket.Server({ server });
 
 //connection list
 const sockets = [];
-
 wss.on("connection", socket => {
   //collects clients connection
   sockets.push(socket);
@@ -38,5 +44,6 @@ wss.on("connection", socket => {
     }
   });
 });
+*/
 
-server.listen(3000, handleListen);
+httpServer.listen(3000, handleListen);
